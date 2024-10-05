@@ -20,12 +20,28 @@ const App = () => {
         let finalText = "";
         for (let i = event.resultIndex; i < event.results.length; i++) {
           if (event.results[i].isFinal) {
-            finalText += event.results[i][0].transcript;
+            finalText += event.results[i][0].transcript.trim();
           } else {
-            interimText += event.results[i][0].transcript;
+            interimText += event.results[i][0].transcript.trim();
           }
         }
-        setTranscript((prevTranscript) => prevTranscript + finalText);
+
+        // Update the transcript by removing repeated final text
+        setTranscript((prevTranscript) => {
+          // Split the previous transcript into words and check the last part
+          const prevWords = prevTranscript.trim().split(" ");
+          const newFinalWords = finalText.split(" ");
+
+          // Only add the finalText if it's different from the last part of the previous transcript
+          if (
+            prevWords.slice(-newFinalWords.length).join(" ") !== newFinalWords.join(" ")
+          ) {
+            return prevTranscript + " " + finalText;
+          }
+
+          return prevTranscript;
+        });
+
         setInterimTranscript(interimText);
       };
 
